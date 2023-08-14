@@ -28,3 +28,24 @@ describe("GET /api/items", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  it("should respond with an article by its id", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+});
