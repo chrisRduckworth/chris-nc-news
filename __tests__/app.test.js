@@ -48,4 +48,20 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
+  it("should response with a 404 Not Found error if no article is found with specified id", () => {
+    return request(app)
+      .get("/api/articles/900")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+  it("should respond with a 400 Invalid id error if sent incorrect data type for id", () => {
+    return request(app)
+      .get("/api/articles/bananas")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Id");
+      });
+  });
 });
