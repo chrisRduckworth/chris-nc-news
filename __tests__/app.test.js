@@ -47,12 +47,33 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body }) => {
         Object.values(body).forEach((endpoint) => {
-          expect(Object.keys(endpoint)).toHaveLength(4)
+          expect(Object.keys(endpoint)).toHaveLength(4);
           expect(endpoint).toHaveProperty("description");
           expect(endpoint).toHaveProperty("queries");
           expect(endpoint).toHaveProperty("format");
           expect(endpoint).toHaveProperty("exampleResponse");
         });
+      });
+  });
+  it("should respond with the correct number of endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const numOfApiControllers = Object.keys(
+          require("../controllers/api-controllers")
+        ).length;
+        const numOfArticlesControllers = Object.keys(
+          require("../controllers/articles-controllers")
+        ).length;
+        const numOfTopicsControllers = Object.keys(
+          require("../controllers/topics-controllers")
+        ).length;
+        expect(
+          numOfApiControllers +
+            numOfArticlesControllers +
+            numOfTopicsControllers
+        ).toEqual(Object.keys(body).length);
       });
   });
 });
@@ -90,6 +111,39 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid Id");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  it("should respond with an array of all article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toHaveLength(13);
+        articles.forEach((article) => {
+          expect(Object.keys(article)).toIncludeSameMembers([
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "article_img_url",
+            "comment_count",
+          ]);
+        });
+      });
+  });
+  it("should sort the articles by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });
