@@ -55,6 +55,27 @@ describe("GET /api", () => {
         });
       });
   });
+  it.only("should respond with the correct number of endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const numOfApiControllers = Object.keys(
+          require("../controllers/api-controllers")
+        ).length;
+        const numOfArticlesControllers = Object.keys(
+          require("../controllers/articles-controllers")
+        ).length;
+        const numOfTopicsControllers = Object.keys(
+          require("../controllers/topics-controllers")
+        ).length;
+        expect(
+          numOfApiControllers +
+            numOfArticlesControllers +
+            numOfTopicsControllers
+        ).toEqual(Object.keys(body).length);
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
