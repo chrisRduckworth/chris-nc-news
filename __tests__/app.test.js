@@ -55,7 +55,7 @@ describe("GET /api", () => {
         });
       });
   });
-  it.only("should respond with the correct number of endpoints", () => {
+  it("should respond with the correct number of endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)
