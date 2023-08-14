@@ -1,8 +1,8 @@
 exports.handleCustomErrors = (err, req, res, next) => {
-  if (err.status){
-      res.status(err.status).send({ msg: err.msg });
+  if (err.status) {
+    res.status(err.status).send({ msg: err.msg });
   }
-  next(err)
+  next(err);
 };
 
 exports.handleSqlErrors = (err, req, res, next) => {
@@ -13,7 +13,5 @@ exports.handleSqlErrors = (err, req, res, next) => {
 };
 
 exports.handleServerErrors = (err, req, res, next) => {
-
-    res.status(500).send({ msg: "Internal Server Error" });
-
+  res.status(500).send({ msg: "Internal Server Error" });
 };
