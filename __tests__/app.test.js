@@ -29,6 +29,34 @@ describe("GET /api/items", () => {
   });
 });
 
+describe("GET /api", () => {
+  it("responds with a JSON object, each key is a valid path", () => {
+    const pathRegex = /(GET|POST|PATCH|DELETE) \/api(\/:?[a-z_]*)*/g;
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        Object.keys(body).forEach((key) => {
+          expect(key).toMatch(pathRegex);
+        });
+      });
+  });
+  it("responds with an object, where each value is an object with the correct keys", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        Object.values(body).forEach((endpoint) => {
+          expect(Object.keys(endpoint)).toHaveLength(4)
+          expect(endpoint).toHaveProperty("description");
+          expect(endpoint).toHaveProperty("queries");
+          expect(endpoint).toHaveProperty("format");
+          expect(endpoint).toHaveProperty("exampleResponse");
+        });
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   it("should respond with an article by its id", () => {
     return request(app)
