@@ -37,6 +37,9 @@ exports.fetchArticles = () => {
     `
     )
     .then(({ rows }) => {
+      rows.forEach((article) => {
+        article.comment_count = parseInt(article.comment_count)
+      })
       return rows;
     });
 };
