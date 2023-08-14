@@ -164,4 +164,20 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  it("should respond with 404 Not Found if no article is found with given id", () => {
+    return request(app)
+      .get("/api/articles/500/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+  it("should respond with 400 Invalid Id if given incorrect data type for id", () => {
+    return request(app)
+      .get("/api/articles/bananas/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Id");
+      });
+  });
 });
