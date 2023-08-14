@@ -1,3 +1,3 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+To set up this repo on a remote create `.env.test` and `.env.development` in the root folder. Inside each of these add `PGDATABASE=nc_news_test` and `PGDATABASE=nc_news` respectively.
