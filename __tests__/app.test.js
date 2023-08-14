@@ -60,20 +60,15 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const numOfApiControllers = Object.keys(
-          require("../controllers/api-controllers")
-        ).length;
-        const numOfArticlesControllers = Object.keys(
-          require("../controllers/articles-controllers")
-        ).length;
-        const numOfTopicsControllers = Object.keys(
-          require("../controllers/topics-controllers")
-        ).length;
-        expect(
-          numOfApiControllers +
-            numOfArticlesControllers +
-            numOfTopicsControllers
-        ).toEqual(Object.keys(body).length);
+        const controllers = ["api", "articles", "comments", "topics"];
+        const controllerFunctions = controllers.map((str) =>
+          require(`../controllers/${str}-controllers.js`)
+        );
+        const numOfEndpoints = controllerFunctions.reduce(
+          (acc, cur) => acc + Object.keys(cur).length,
+          0
+        );
+        expect(Object.keys(body).length).toBe(numOfEndpoints);
       });
   });
 });
@@ -149,7 +144,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
-  it.skip("should respond with an array of comments with the given article_id, sorted by date", () => {
+  it("should respond with an array of comments with the given article_id, sorted by date", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
