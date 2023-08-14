@@ -52,5 +52,20 @@
       "votes": 100,
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
+  },
+	"GET /api/articles/:article_id/comments": {
+    "description": "serves an array with all the comment objects from the specified article",
+    "queries": [],
+    "format": "array",
+    "exampleResponse": [
+      {
+        "comment_id": 5,
+        "votes": 10,
+        "created_at": 1594329060000,
+        "author": "chris",
+        "body": "there is no spoon",
+        "article_id": 2
+      }
+    ]
   }
 }

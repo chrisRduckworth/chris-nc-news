@@ -47,7 +47,7 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body }) => {
         Object.values(body).forEach((endpoint) => {
-          expect(Object.keys(endpoint)).toHaveLength(4)
+          expect(Object.keys(endpoint)).toHaveLength(4);
           expect(endpoint).toHaveProperty("description");
           expect(endpoint).toHaveProperty("queries");
           expect(endpoint).toHaveProperty("format");
@@ -90,6 +90,29 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid Id");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  it("should respond with an array of comments with the given article_id, sorted by date", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(Object.keys(comment)).toIncludeSameMembers([
+            "comment_id",
+            "votes",
+            "created_at",
+            "author",
+            "body",
+            "article_id",
+          ]);
+        });
       });
   });
 });
