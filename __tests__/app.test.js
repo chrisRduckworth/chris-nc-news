@@ -7,6 +7,12 @@ const db = require("../db/connection");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("incorrect path", () => {
+  test("should return 404 on incorrect path", () => {
+    return request(app).get("/api/tipics").expect(404);
+  });
+});
+
 describe("GET /api/items", () => {
   it("responds with an array of topic objects, each of which should have properties slug and description", () => {
     return request(app)
