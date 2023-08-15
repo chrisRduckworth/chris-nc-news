@@ -5,7 +5,7 @@ const {
   getArticleById,
   getArticles,
 } = require("./controllers/articles-controllers");
-const { postComment } = require("./controllers/comments-controllers");
+const { getCommentsByArticle,postComment } = require("./controllers/comments-controllers");
 const {
   handleServerErrors,
   handleCustomErrors,
@@ -24,7 +24,14 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id", getArticleById);
 
+app.get("/api/articles/:article_id/comments", getCommentsByArticle);
+
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.use((_, res) => {
+  res.status(404).send({ msg: "Path not found" });
+});
+
 
 app.use(handleCustomErrors);
 

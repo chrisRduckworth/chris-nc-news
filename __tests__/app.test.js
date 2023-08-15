@@ -8,12 +8,17 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("incorrect path", () => {
-  test("should return 404 on incorrect path", () => {
-    return request(app).get("/api/tipics").expect(404);
+  test("should return 404 on incorrect path with custom error msg", () => {
+    return request(app)
+      .get("/api/tipics")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
   });
 });
 
-describe("GET /api/items", () => {
+describe("GET /api/topics", () => {
   it("responds with an array of topic objects, each of which should have properties slug and description", () => {
     return request(app)
       .get("/api/topics")
@@ -60,20 +65,15 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const numOfApiControllers = Object.keys(
-          require("../controllers/api-controllers")
-        ).length;
-        const numOfArticlesControllers = Object.keys(
-          require("../controllers/articles-controllers")
-        ).length;
-        const numOfTopicsControllers = Object.keys(
-          require("../controllers/topics-controllers")
-        ).length;
-        expect(
-          numOfApiControllers +
-            numOfArticlesControllers +
-            numOfTopicsControllers
-        ).toEqual(Object.keys(body).length);
+        const controllers = ["api", "articles", "comments", "topics"];
+        const controllerFunctions = controllers.map((str) =>
+          require(`../controllers/${str}-controllers.js`)
+        );
+        const numOfEndpoints = controllerFunctions.reduce(
+          (acc, cur) => acc + Object.keys(cur).length,
+          0
+        );
+        expect(Object.keys(body).length).toBe(numOfEndpoints);
       });
   });
 });
@@ -144,6 +144,54 @@ describe("GET /api/articles", () => {
       .then((response) => {
         const { articles } = response.body;
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  it("should respond with an array of comments with the given article_id, sorted by date", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        const keys = [
+          "comment_id",
+          "votes",
+          "created_at",
+          "author",
+          "body",
+          "article_id"
+        ];
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(Object.keys(comment)).toEqual(expect.arrayContaining(keys));
+        });
+      });
+  });
+  it("should respond with 404 Not Found if no article is found with given id", () => {
+    return request(app)
+      .get("/api/articles/500/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+  it("should respond with 400 Invalid Id if given incorrect data type for id", () => {
+    return request(app)
+      .get("/api/articles/bananas/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Id");
+      });
+  });
+  it("should respond with 200 and empty array if given a valid article but it has no comments", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
       });
   });
 });
