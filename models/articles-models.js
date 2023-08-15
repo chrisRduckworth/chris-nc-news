@@ -38,27 +38,32 @@ exports.fetchArticles = () => {
     )
     .then(({ rows }) => {
       rows.forEach((article) => {
-        article.comment_count = parseInt(article.comment_count)
-      })
+        let { comment_count } = article;
+        comment_count = parseInt(comment_count);
+      });
       return rows;
     });
 };
 
 exports.updateArticleVotes = (articleId, incVotes) => {
-  console.log(articleId, incVotes)
-  return db.query(`SELECT votes FROM articles WHERE article_id = $1;`, [articleId])
-  .then(({rows}) => {
-    let {votes} = rows[0]
-    votes += incVotes
-    return db.query(`
+  console.log(articleId, incVotes);
+  return db
+    .query(`SELECT votes FROM articles WHERE article_id = $1;`, [articleId])
+    .then(({ rows }) => {
+      let { votes } = rows[0];
+      votes += incVotes;
+      return db.query(
+        `
       UPDATE articles
       SET votes = $1
       WHERE article_id = $2
       RETURNING *;
-    `, [votes, articleId])
-  })
-  .then(({rows}) => {
-    return rows[0]
-  })
-  .catch((err) => console.log(err))
-}
+    `,
+        [votes, articleId]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    })
+    .catch((err) => console.log(err));
+};
