@@ -3,7 +3,6 @@ const {
   fetchArticles,
   updateArticleVotes,
 } = require("../models/articles-models");
-const { checkExists } = require("../utils/utils");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -27,7 +26,6 @@ exports.patchArticleVotes = (req, res, next) => {
   const { inc_votes } = req.body;
   updateArticleVotes(article_id, inc_votes)
     .then((article) => {
-      console.log("in third then")
       res.status(200).send({ article });
     })
     .catch(next);
