@@ -3,17 +3,12 @@ const {
   createComment,
   removeComment,
 } = require("../models/comments-models");
-const { checkExists } = require("../utils/utils");
 
 exports.getCommentsByArticle = (req, res, next) => {
   const { article_id } = req.params;
-  const promises = [
-    fetchCommentsByArticle(article_id),
-    checkExists("articles", "article_id", article_id),
-  ];
-  Promise.all(promises)
-    .then((resolvedPromises) => {
-      res.status(200).send({ comments: resolvedPromises[0] });
+  fetchCommentsByArticle(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
@@ -32,11 +27,7 @@ exports.postComment = (req, res, next) => {
 
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
-  const promises = [
-    removeComment(comment_id),
-    checkExists("comments", "comment_id", comment_id),
-  ];
-  Promise.all(promises)
+  removeComment(comment_id)
     .then(() => {
       res.status(204).send();
     })
