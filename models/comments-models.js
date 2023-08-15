@@ -11,3 +11,16 @@ exports.fetchCommentsByArticle = (articleId) => {
     )
     .then(({ rows }) => rows);
 };
+
+exports.createComment = (body, articleId) => {
+  return db.query(
+    `INSERT INTO comments
+    (article_id, author, body)
+    VALUES
+    ($1, $2, $3)
+    RETURNING *;
+    `,[articleId, body.username, body.body])
+  .then(({rows}) => {
+    return rows[0]
+  })
+}
