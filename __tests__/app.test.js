@@ -12,8 +12,8 @@ describe("incorrect path", () => {
     return request(app)
       .get("/api/tipics")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Path not found");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Path not found");
       });
   });
 });
@@ -23,8 +23,7 @@ describe("GET /api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then((response) => {
-        const { topics } = response.body;
+      .then(({body: {topics}}) => {
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
@@ -83,8 +82,8 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.article).toEqual({
+      .then(({ body: {article} }) => {
+        expect(article).toEqual({
           author: "icellusedkars",
           title: "Eight pug gifs that remind me of mitch",
           article_id: 3,
@@ -101,16 +100,16 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/900")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Not Found");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
       });
   });
   it("should respond with a 400 Invalid id error if sent incorrect data type for id", () => {
     return request(app)
       .get("/api/articles/bananas")
       .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Id");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Id");
       });
   });
 });
@@ -120,8 +119,7 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((response) => {
-        const { articles } = response.body;
+      .then(({body: {articles}}) => {
         expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(Object.keys(article)).toIncludeSameMembers([
@@ -141,8 +139,7 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((response) => {
-        const { articles } = response.body;
+      .then(({body: {articles}}) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
@@ -153,8 +150,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
-      .then(({ body }) => {
-        const { comments } = body;
+      .then(({ body: {comments} }) => {
         const keys = [
           "comment_id",
           "votes",
@@ -174,24 +170,24 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/500/comments")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Not Found");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
       });
   });
   it("should respond with 400 Invalid Id if given incorrect data type for id", () => {
     return request(app)
       .get("/api/articles/bananas/comments")
       .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Id");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Id");
       });
   });
   it("should respond with 200 and empty array if given a valid article but it has no comments", () => {
     return request(app)
       .get("/api/articles/4/comments")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toEqual([]);
+      .then(({ body: {comments} }) => {
+        expect(comments).toEqual([]);
       });
   });
 });
@@ -206,8 +202,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/2/comments")
       .send(newComment)
       .expect(201)
-      .then(({ body }) => {
-        const { comment } = body;
+      .then(({ body: {comment} }) => {
         expect(comment).toHaveProperty("comment_id", 19);
         expect(comment).toHaveProperty("body", "perfect 5/7");
         expect(comment).toHaveProperty("article_id", 2);
@@ -225,8 +220,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/500/comments")
       .send(newComment)
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Not Found");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
       });
   });
   it("should respond with 400 Invalid Id when sent an invalid id", () => {
@@ -238,8 +233,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/bananas/comments")
       .send(newComment)
       .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Id");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Id");
       });
   });
   it("should respond with 400 Invalid Input when send a malformed body", () => {
@@ -248,8 +243,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Input");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Input");
       });
   });
   it("should respond with 400 Invalid Input when send a body with invalid values", () => {
@@ -261,8 +256,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Input");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Input");
       });
   });
 });
