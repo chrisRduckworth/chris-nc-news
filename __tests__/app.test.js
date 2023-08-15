@@ -172,7 +172,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(rows).toHaveLength(19);
       });
   });
-  it("should respond with 404 Not Article when given an article id with doesn't exist", () => {
+  it("should respond with 404 Not Found when given an article id with doesn't exist", () => {
     const newComment = {
       username: "butter_bridge",
       body: "perfect 5/7",
@@ -185,7 +185,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
-  it("should respond with 400 Bad Request when sent an invalid id", () => {
+  it("should respond with 400 Invalid Id when sent an invalid id", () => {
     const newComment = {
       username: "butter_bridge",
       body: "perfect 5/7",
@@ -198,9 +198,27 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Invalid Id");
       });
   })
-  // errors to test:
-  // invalid id
-  // id not found
-  // malformed/missing body
-  // failing schema validation
+  it("should respond with 400 Invalid Input when send a malformed body", () => {
+    const newComment = {}
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid Input")
+      })
+  })
+  it("should respond with 400 Invalid Input when send a body with invalid values", () => {
+    const newComment = {
+      body: "blah blah blah",
+      user_name: 0
+    }
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid Input")
+      })
+  })
 });

@@ -10,7 +10,7 @@ const {
   handleServerErrors,
   handleCustomErrors,
   handleSqlErrors,
-} = require("./errors");
+} = require("./controllers/error-controllers");
 
 const app = express();
 
