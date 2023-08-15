@@ -65,7 +65,7 @@ describe.skip("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const controllers = ["api", "articles", "comments", "topics"];
+        const controllers = ["api", "articles", "comments", "topics", "users"];
         const controllerFunctions = controllers.map((str) =>
           require(`../controllers/${str}-controllers.js`)
         );
