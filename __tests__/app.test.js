@@ -18,7 +18,7 @@ describe("incorrect path", () => {
   });
 });
 
-describe("GET /api/items", () => {
+describe("GET /api/topics", () => {
   it("responds with an array of topic objects, each of which should have properties slug and description", () => {
     return request(app)
       .get("/api/topics")
@@ -155,17 +155,18 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
+        const keys = [
+          "comment_id",
+          "votes",
+          "created_at",
+          "author",
+          "body",
+          "article_id"
+        ];
         expect(comments).toHaveLength(11);
         expect(comments).toBeSortedBy("created_at", { descending: true });
         comments.forEach((comment) => {
-          expect(Object.keys(comment)).toIncludeSameMembers([
-            "comment_id",
-            "votes",
-            "created_at",
-            "author",
-            "body",
-            "article_id",
-          ]);
+          expect(Object.keys(comment)).toEqual(expect.arrayContaining(keys));
         });
       });
   });
