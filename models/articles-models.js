@@ -37,8 +37,7 @@ exports.fetchArticles = () => {
     `
     )
     .then(({ rows }) => {
-      rows.forEach((article) => {
-        let { comment_count } = article;
+      rows.forEach(({ comment_count }) => {
         comment_count = parseInt(comment_count);
       });
       return rows;
