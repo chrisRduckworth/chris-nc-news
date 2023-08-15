@@ -382,8 +382,8 @@ describe("GET /api/users", () => {
   });
 });
 
-describe.only("FEATURE GET/api/articles (queries)", () => {
-  describe("topic query", () => {
+describe("FEATURE GET/api/articles (queries)", () => {
+  describe("topic", () => {
     it("should filter by topic valuued specified in query", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
@@ -395,5 +395,36 @@ describe.only("FEATURE GET/api/articles (queries)", () => {
           });
         });
     });
+    it("should return empty array if no articles have that topic", () => {
+      return request(app)
+        .get("/api/articles?topic=bananas")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toEqual([]);
+        });
+    });
+  });
+  describe("sort_by", () => {
+    it("should sort articles by specified column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("comment_count", { descending: true, coerce: true });
+        });
+    });
+    it("should return 400 Invalid sort query if given invalid sort query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=bananas")
+        .expect(400)
+        .then(({body: {msg}}) => {
+          expect(msg).toBe("Invalid Sort Query")
+        })
+    })
   });
 });
+
+//check all 3 work at once
+//errors:
+//invalid sort_by
+//invalid order
