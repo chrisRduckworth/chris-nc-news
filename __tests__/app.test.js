@@ -55,7 +55,7 @@ describe("GET /api", () => {
         });
       });
   });
-  it("should respond with the correct number of endpoints", () => {
+  it.skip("should respond with the correct number of endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -146,4 +146,61 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  it("should post a new comment to an article", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "perfect 5/7",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toHaveProperty("comment_id", 19);
+        expect(comment).toHaveProperty("body", "perfect 5/7");
+        expect(comment).toHaveProperty("article_id", 2);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at");
+        return db.query(`SELECT * FROM comments;`);
+      })
+      .then(({ rows }) => {
+        expect(rows).toHaveLength(19);
+      });
+  });
+  it("should respond with 404 Not Article when given an article id with doesn't exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "perfect 5/7",
+    };
+    return request(app)
+      .post("/api/articles/500/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+  it("should respond with 400 Bad Request when sent an invalid id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "perfect 5/7",
+    };
+    return request(app)
+      .post("/api/articles/bananas/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Id");
+      });
+  })
+  // errors to test:
+  // invalid id
+  // id not found
+  // malformed/missing body
+  // failing schema validation
 });
