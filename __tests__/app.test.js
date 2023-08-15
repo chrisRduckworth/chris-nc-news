@@ -382,7 +382,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe.only("FEATURE GET/api/articles (queries)", () => {
+describe("FEATURE GET/api/articles (queries)", () => {
   describe("topic", () => {
     it("should filter by topic valuued specified in query", () => {
       return request(app)
@@ -442,5 +442,16 @@ describe.only("FEATURE GET/api/articles (queries)", () => {
           expect(msg).toBe("Invalid Order Query");
         });
     });
+  });
+  it("should accept combinations of queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title");
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "mitch");
+        });
+      });
   });
 });
