@@ -262,6 +262,33 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("DELETE /api/comments/:commend_it", () => {
+  it("should delete comment with given id, responds with status 204 no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  it("should return 404 not found when given an id with no associated comment", () => {
+    return request(app)
+      .delete("/api/comments/500")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
+      });
+  });
+  it("should return 400 bad request when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   it("should increase votes of article if given positive inc_votes", () => {
     return request(app)
