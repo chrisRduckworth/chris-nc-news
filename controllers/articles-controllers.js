@@ -3,6 +3,7 @@ const {
   fetchArticles,
   updateArticleVotes,
 } = require("../models/articles-models");
+const { checkExists } = require("../utils/utils");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -24,13 +25,10 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  if (typeof inc_votes !== "number") {
-    const err = { status: 400, msg: "Invalid Input" };
-    next(err);
-  }
-  updateArticleVotes(article_id, inc_votes)
-    .then((article) => {
-      res.status(200).send({ article });
+  const promises = [updateArticleVotes(article_id, inc_votes), checkExists("articles", "article_id", article_id)]
+  Promise.all(promises)
+    .then((result) => {
+      res.status(200).send({article: result[0]})
     })
     .catch(next);
 };

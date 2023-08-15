@@ -6,14 +6,11 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handleSqlErrors = (err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ msg: "Invalid Id" });
+  if (err.code === "22P02" || err.code === "23502") {
+    res.status(400).send({ msg: "Bad Request" });
   }
   if (err.code === "23503") {
     res.status(404).send({ msg: "Not Found" });
-  }
-  if (err.code === "23502") {
-    res.status(400).send({ msg: "Invalid Input" });
   }
   next(err);
 };
