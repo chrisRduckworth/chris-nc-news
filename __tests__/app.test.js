@@ -8,8 +8,13 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("incorrect path", () => {
-  test("should return 404 on incorrect path", () => {
-    return request(app).get("/api/tipics").expect(404);
+  test("should return 404 on incorrect path with custom error msg", () => {
+    return request(app)
+      .get("/api/tipics")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
   });
 });
 
@@ -178,6 +183,14 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid Id");
+      });
+  });
+  it("should respond with 200 and empty array if given a valid article but it has no comments", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
       });
   });
 });
