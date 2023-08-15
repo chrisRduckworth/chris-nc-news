@@ -82,6 +82,12 @@
       "created_at": "2020-07-21 01:20:00"
     }
   },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the specified comment",
+    "queries": [],
+    "format": "empty",
+    "exampleResponse": {}
+  },
   "GET /api/users": {
     "description": "gets all users",
     "queries": [],

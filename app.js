@@ -8,6 +8,7 @@ const {
 const {
   getCommentsByArticle,
   postComment,
+  deleteComment,
 } = require("./controllers/comments-controllers");
 const {
   handleServerErrors,
@@ -31,6 +32,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.get("/api/users", getUsers);
 
