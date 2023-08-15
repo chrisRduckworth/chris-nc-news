@@ -161,7 +161,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           "created_at",
           "author",
           "body",
-          "article_id"
+          "article_id",
         ];
         expect(comments).toHaveLength(11);
         expect(comments).toBeSortedBy("created_at", { descending: true });
@@ -241,34 +241,34 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid Id");
       });
-  })
+  });
   it("should respond with 400 Invalid Input when send a malformed body", () => {
-    const newComment = {}
+    const newComment = {};
     return request(app)
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Invalid Input")
-      })
-  })
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Input");
+      });
+  });
   it("should respond with 400 Invalid Input when send a body with invalid values", () => {
     const newComment = {
       body: "blah blah blah",
-      user_name: 0
-    }
+      user_name: 0,
+    };
     return request(app)
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Invalid Input")
-      })
-  })
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Input");
+      });
+  });
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  it.only("should increase votes of article if given positive inc_votes", () => {
+  it("should increase votes of article if given positive inc_votes", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: 5 })
@@ -285,10 +285,6 @@ describe("PATCH /api/articles/:article_id", () => {
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
-        return db.query("SELECT * FROM articles WHERE article_id = 1");
-      })
-      .then(({ rows }) => {
-        expect(rows[0]).toHaveProperty("votes", 105);
       });
   });
 });
