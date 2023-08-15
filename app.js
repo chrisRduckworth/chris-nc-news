@@ -5,7 +5,11 @@ const {
   getArticleById,
   getArticles,
 } = require("./controllers/articles-controllers");
-const { getCommentsByArticle,postComment } = require("./controllers/comments-controllers");
+const {
+  getCommentsByArticle,
+  postComment,
+  deleteComment,
+} = require("./controllers/comments-controllers");
 const {
   handleServerErrors,
   handleCustomErrors,
@@ -14,7 +18,7 @@ const {
 
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
 app.get("/api", getEndpoints);
 
@@ -28,10 +32,11 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
+app.delete("/api/comments/:comment_id", deleteComment);
+
 app.use((_, res) => {
   res.status(404).send({ msg: "Path not found" });
 });
-
 
 app.use(handleCustomErrors);
 
