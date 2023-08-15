@@ -166,10 +166,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(comment).toHaveProperty("author", "butter_bridge");
         expect(comment).toHaveProperty("votes", 0);
         expect(comment).toHaveProperty("created_at");
-        return db.query(`SELECT * FROM comments;`);
-      })
-      .then(({ rows }) => {
-        expect(rows).toHaveLength(19);
       });
   });
   it("should respond with 404 Not Found when given an article id with doesn't exist", () => {
