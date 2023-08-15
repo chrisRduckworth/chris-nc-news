@@ -64,7 +64,7 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const controllers = ["api", "articles", "comments", "topics"];
+        const controllers = ["api", "articles", "comments", "topics", "users"];
         const controllerFunctions = controllers.map((str) =>
           require(`../controllers/${str}-controllers.js`)
         );
@@ -362,6 +362,22 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  it("should respond 200 with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
       });
   });
 });
