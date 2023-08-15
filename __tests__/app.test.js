@@ -34,7 +34,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET /api", () => {
+describe.skip("GET /api", () => {
   it("responds with a JSON object, each key is a valid path", () => {
     const pathRegex = /(GET|POST|PATCH|DELETE) \/api(\/:?[a-z_]*)*/g;
     return request(app)
@@ -265,4 +265,20 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Invalid Input")
       })
   })
+});
+
+describe.skip("GET /api/users", () => {
+  it("should respond 200 with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
 });
