@@ -13,7 +13,7 @@ exports.handleSqlErrors = (err, req, res, next) => {
     res.status(404).send({ msg: "Not Found" });
   }
   if (err.code === "23502") {
-    res.status(400).send({msg: "Invalid Input"})
+    res.status(400).send({ msg: "Invalid Input" });
   }
   next(err);
 };

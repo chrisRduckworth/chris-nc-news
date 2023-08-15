@@ -23,7 +23,7 @@ describe("GET /api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then(({body: {topics}}) => {
+      .then(({ body: { topics } }) => {
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
@@ -82,7 +82,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
-      .then(({ body: {article} }) => {
+      .then(({ body: { article } }) => {
         expect(article).toEqual({
           author: "icellusedkars",
           title: "Eight pug gifs that remind me of mitch",
@@ -119,7 +119,7 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({body: {articles}}) => {
+      .then(({ body: { articles } }) => {
         expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(Object.keys(article)).toIncludeSameMembers([
@@ -139,7 +139,7 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({body: {articles}}) => {
+      .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
@@ -150,7 +150,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
-      .then(({ body: {comments} }) => {
+      .then(({ body: { comments } }) => {
         const keys = [
           "comment_id",
           "votes",
@@ -186,7 +186,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/4/comments")
       .expect(200)
-      .then(({ body: {comments} }) => {
+      .then(({ body: { comments } }) => {
         expect(comments).toEqual([]);
       });
   });
@@ -202,7 +202,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/2/comments")
       .send(newComment)
       .expect(201)
-      .then(({ body: {comment} }) => {
+      .then(({ body: { comment } }) => {
         expect(comment).toHaveProperty("comment_id", 19);
         expect(comment).toHaveProperty("body", "perfect 5/7");
         expect(comment).toHaveProperty("article_id", 2);
@@ -282,11 +282,59 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
+  it("should decrease votes of article if given negative inc_votes", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 95,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  it("should return 400 invalid id if article_id is invalid", () => {
+    return request(app)
+      .patch("/api/articles/bananas")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Id");
+      });
+  });
+  it("should return 404 Not Found if article_id no such article exists", () => {
+    return request(app)
+      .patch("/api/articles/500")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
+      });
+  });
+  it("should return 400 Invalid Input when sent malformed body", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Input");
+      });
+  });
+  it("should return 400 Invalid Input when sent non-number inc_votes", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: "blah" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Input");
+      });
+  });
 });
-// tests:
-// passes increasing vote
-// passes decreasing vote
-// invalid id
-// not found
-// malformed body {}
-// inc_votes of wrong shape eg {inc_votes: "blah"}

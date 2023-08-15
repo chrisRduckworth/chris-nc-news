@@ -22,10 +22,15 @@ exports.getArticles = (req, res, next) => {
 };
 
 exports.patchArticleVotes = (req, res, next) => {
-  const {article_id} = req.params
-  const {inc_votes} = req.body
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  if (typeof inc_votes !== "number") {
+    const err = { status: 400, msg: "Invalid Input" };
+    next(err);
+  }
   updateArticleVotes(article_id, inc_votes)
-  .then((article) => {
-    res.status(200).send({article})
-  })
-}
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch(next);
+};

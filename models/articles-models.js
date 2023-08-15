@@ -46,10 +46,15 @@ exports.fetchArticles = () => {
 };
 
 exports.updateArticleVotes = (articleId, incVotes) => {
-  console.log(articleId, incVotes);
   return db
     .query(`SELECT votes FROM articles WHERE article_id = $1;`, [articleId])
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not Found",
+        });
+      }
       let { votes } = rows[0];
       votes += incVotes;
       return db.query(
@@ -64,6 +69,5 @@ exports.updateArticleVotes = (articleId, incVotes) => {
     })
     .then(({ rows }) => {
       return rows[0];
-    })
-    .catch((err) => console.log(err));
+    });
 };
