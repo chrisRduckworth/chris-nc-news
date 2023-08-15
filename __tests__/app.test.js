@@ -105,12 +105,12 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
-  it("should respond with a 400 Invalid id error if sent incorrect data type for id", () => {
+  it("should respond with a 400 Bad Request error if sent incorrect data type for id", () => {
     return request(app)
       .get("/api/articles/bananas")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Id");
+        expect(body.msg).toBe("Bad Request");
       });
   });
 });
@@ -178,12 +178,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
-  it("should respond with 400 Invalid Id if given incorrect data type for id", () => {
+  it("should respond with 400 Bad Request if given incorrect data type for id", () => {
     return request(app)
       .get("/api/articles/bananas/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Id");
+        expect(body.msg).toBe("Bad Request");
       });
   });
   it("should respond with 200 and empty array if given a valid article but it has no comments", () => {
@@ -229,7 +229,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
-  it("should respond with 400 Invalid Id when sent an invalid id", () => {
+  it("should respond with 400 Bad Request when sent an Bad Request", () => {
     const newComment = {
       username: "butter_bridge",
       body: "perfect 5/7",
@@ -239,20 +239,20 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Id");
+        expect(body.msg).toBe("Bad Request");
       });
   })
-  it("should respond with 400 Invalid Input when send a malformed body", () => {
+  it("should respond with 400 Bad Request when send a malformed body", () => {
     const newComment = {}
     return request(app)
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(400)
       .then(({body}) => {
-        expect(body.msg).toBe("Invalid Input")
+        expect(body.msg).toBe("Bad Request")
       })
   })
-  it("should respond with 400 Invalid Input when send a body with invalid values", () => {
+  it("should respond with 400 Bad Request when send a body with invalid values", () => {
     const newComment = {
       body: "blah blah blah",
       user_name: 0
@@ -262,7 +262,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then(({body}) => {
-        expect(body.msg).toBe("Invalid Input")
+        expect(body.msg).toBe("Bad Request")
       })
   })
 });
