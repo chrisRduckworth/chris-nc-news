@@ -381,3 +381,19 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe.only("FEATURE GET/api/articles (queries)", () => {
+  describe("topic query", () => {
+    it("should filter by topic valuued specified in query", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic", "mitch");
+          });
+        });
+    });
+  });
+});
