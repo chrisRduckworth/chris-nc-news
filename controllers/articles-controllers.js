@@ -25,10 +25,10 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  const promises = [updateArticleVotes(article_id, inc_votes), checkExists("articles", "article_id", article_id)]
-  Promise.all(promises)
-    .then((result) => {
-      res.status(200).send({article: result[0]})
+  updateArticleVotes(article_id, inc_votes)
+    .then((article) => {
+      console.log("in third then")
+      res.status(200).send({ article });
     })
     .catch(next);
 };

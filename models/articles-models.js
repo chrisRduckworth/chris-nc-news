@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../utils/utils");
 
 exports.fetchArticleById = (articleId) => {
   return db
@@ -45,14 +46,16 @@ exports.fetchArticles = () => {
 };
 
 exports.updateArticleVotes = (articleId, incVotes) => {
-  return db
-    .query(
-      `UPDATE articles
-      SET votes = votes + $1
-      WHERE article_id = $2
-      RETURNING *`,
-      [incVotes, articleId]
-    )
+  return checkExists("articles", "article_id", articleId)
+    .then(() => {
+      return db.query(
+        `UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *`,
+        [incVotes, articleId]
+      );
+    })
     .then(({ rows }) => {
       return rows[0];
     });
