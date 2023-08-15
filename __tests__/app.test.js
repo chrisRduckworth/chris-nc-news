@@ -196,6 +196,77 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("POST /api/articles/:article_id/comments", () => {
+  it("should post a new comment to an article", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "perfect 5/7",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toHaveProperty("comment_id", 19);
+        expect(comment).toHaveProperty("body", "perfect 5/7");
+        expect(comment).toHaveProperty("article_id", 2);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at");
+      });
+  });
+  it("should respond with 404 Not Found when given an article id with doesn't exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "perfect 5/7",
+    };
+    return request(app)
+      .post("/api/articles/500/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+  it("should respond with 400 Invalid Id when sent an invalid id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "perfect 5/7",
+    };
+    return request(app)
+      .post("/api/articles/bananas/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Id");
+      });
+  })
+  it("should respond with 400 Invalid Input when send a malformed body", () => {
+    const newComment = {}
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid Input")
+      })
+  })
+  it("should respond with 400 Invalid Input when send a body with invalid values", () => {
+    const newComment = {
+      body: "blah blah blah",
+      user_name: 0
+    }
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid Input")
+      })
+  })
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   it.only("should increase votes of article if given positive inc_votes", () => {
     return request(app)
