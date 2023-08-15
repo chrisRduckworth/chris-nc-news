@@ -33,7 +33,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe.skip("GET /api", () => {
+describe("GET /api", () => {
   it("responds with a JSON object, each key is a valid path", () => {
     const pathRegex = /(GET|POST|PATCH|DELETE) \/api(\/:?[a-z_]*)*/g;
     return request(app)
@@ -366,7 +366,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.skip("GET /api/users", () => {
+describe("GET /api/users", () => {
   it("should respond 200 with an array of user objects", () => {
     return request(app)
       .get("/api/users")

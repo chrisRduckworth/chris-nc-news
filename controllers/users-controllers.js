@@ -1,6 +1,9 @@
 const { fetchUsers } = require("../models/users-models");
 
-exports.getUsers = () => {
-  console.log("in controller");
-  fetchUsers();
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch(next);
 };
