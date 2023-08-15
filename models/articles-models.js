@@ -19,17 +19,17 @@ exports.fetchArticleById = (articleId) => {
     });
 };
 
-exports.fetchArticles = (topic, sortBy = "date") => {
+exports.fetchArticles = (topic, sortBy = "date", order = "desc") => {
   const queries = [];
   const sortByLookup = {
     author: "articles.author",
-    title: 'title',
+    title: "title",
     article_id: "articles.article_id",
-    topic: 'topic',
+    topic: "topic",
     date: "articles.created_at",
     votes: "articles.votes",
-    article_img_url: 'article_img_url',
-    comment_count: 'comment_count',
+    article_img_url: "article_img_url",
+    comment_count: "comment_count",
   };
 
   if (!Object.keys(sortByLookup).includes(sortBy)) {
@@ -38,6 +38,14 @@ exports.fetchArticles = (topic, sortBy = "date") => {
       msg: "Invalid Sort Query",
     });
   }
+
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Order Query",
+    });
+  }
+
   sortBy = sortByLookup[sortBy];
 
   let queryStr = `
@@ -58,7 +66,7 @@ exports.fetchArticles = (topic, sortBy = "date") => {
   }
   queryStr += `
     GROUP BY articles.article_id
-    ORDER BY ${sortBy} DESC;`;
+    ORDER BY ${sortBy} ${order};`;
 
   return db.query(queryStr, queries).then(({ rows }) => {
     rows.forEach(({ comment_count }) => {

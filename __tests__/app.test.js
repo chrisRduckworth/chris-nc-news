@@ -382,7 +382,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("FEATURE GET/api/articles (queries)", () => {
+describe.only("FEATURE GET/api/articles (queries)", () => {
   describe("topic", () => {
     it("should filter by topic valuued specified in query", () => {
       return request(app)
@@ -410,21 +410,37 @@ describe("FEATURE GET/api/articles (queries)", () => {
         .get("/api/articles?sort_by=comment_count")
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles).toBeSortedBy("comment_count", { descending: true, coerce: true });
+          expect(articles).toBeSortedBy("comment_count", {
+            descending: true,
+            coerce: true,
+          });
         });
     });
     it("should return 400 Invalid sort query if given invalid sort query", () => {
       return request(app)
         .get("/api/articles?sort_by=bananas")
         .expect(400)
-        .then(({body: {msg}}) => {
-          expect(msg).toBe("Invalid Sort Query")
-        })
-    })
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Sort Query");
+        });
+    });
+  });
+  describe("order", () => {
+    it("should order ascending or descending depending on order query", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    it("should return 400 Invalid Order Query when sent invalid order", () => {
+      return request(app)
+        .get("/api/articles?order=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Order Query");
+        });
+    });
   });
 });
-
-//check all 3 work at once
-//errors:
-//invalid sort_by
-//invalid order
