@@ -83,17 +83,19 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/3")
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article).toEqual({
-          author: "icellusedkars",
-          title: "Eight pug gifs that remind me of mitch",
-          article_id: 3,
-          body: "some gifs",
-          topic: "mitch",
-          created_at: "2020-11-03T09:12:00.000Z",
-          votes: 0,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        });
+        expect(article).toEqual(
+          expect.objectContaining({
+            author: "icellusedkars",
+            title: "Eight pug gifs that remind me of mitch",
+            article_id: 3,
+            body: "some gifs",
+            topic: "mitch",
+            created_at: "2020-11-03T09:12:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+        );
       });
   });
   it("should response with a 404 Not Found error if no article is found with specified id", () => {
@@ -452,6 +454,17 @@ describe("FEATURE GET/api/articles (queries)", () => {
         articles.forEach((article) => {
           expect(article).toHaveProperty("topic", "mitch");
         });
+      });
+  });
+});
+
+describe("FEATURE GET /api/articles:article_id (comment_count)", () => {
+  it("should respond with an article object with the comment_count included", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("comment_count", 11);
       });
   });
 });
