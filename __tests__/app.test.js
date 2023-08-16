@@ -468,3 +468,19 @@ describe("FEATURE GET /api/articles:article_id (comment_count)", () => {
       });
   });
 });
+
+describe.only("GET /api/users/:username", () => {
+  it("should return with specified user", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+});
