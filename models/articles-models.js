@@ -19,10 +19,37 @@ exports.fetchArticleById = (articleId) => {
     });
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `SELECT 
+exports.fetchArticles = (topic, sortBy = "date", order = "desc") => {
+  const queries = [];
+  const sortByLookup = {
+    author: "articles.author",
+    title: "title",
+    article_id: "articles.article_id",
+    topic: "topic",
+    date: "articles.created_at",
+    votes: "articles.votes",
+    article_img_url: "article_img_url",
+    comment_count: "comment_count",
+  };
+
+  if (!Object.keys(sortByLookup).includes(sortBy)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Sort Query",
+    });
+  }
+
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Order Query",
+    });
+  }
+
+  sortBy = sortByLookup[sortBy];
+
+  let queryStr = `
+    SELECT 
         articles.author, 
         title, 
         articles.article_id, 
@@ -32,17 +59,21 @@ exports.fetchArticles = () => {
         article_img_url, 
         COUNT(comment_id) AS comment_count
       FROM articles
-      LEFT OUTER JOIN comments ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC;
-    `
-    )
-    .then(({ rows }) => {
-      rows.forEach(({ comment_count }) => {
-        comment_count = parseInt(comment_count);
-      });
-      return rows;
+      LEFT OUTER JOIN comments ON articles.article_id = comments.article_id`;
+  if (topic) {
+    queryStr += ` WHERE topic LIKE $1`;
+    queries.push(topic);
+  }
+  queryStr += `
+    GROUP BY articles.article_id
+    ORDER BY ${sortBy} ${order};`;
+
+  return db.query(queryStr, queries).then(({ rows }) => {
+    rows.forEach(({ comment_count }) => {
+      comment_count = parseInt(comment_count);
     });
+    return rows;
+  });
 };
 
 exports.updateArticleVotes = (articleId, incVotes) => {

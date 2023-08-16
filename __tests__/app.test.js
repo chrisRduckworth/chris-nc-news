@@ -381,3 +381,77 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("FEATURE GET/api/articles (queries)", () => {
+  describe("topic", () => {
+    it("should filter by topic valuued specified in query", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic", "mitch");
+          });
+        });
+    });
+    it("should return empty array if no articles have that topic", () => {
+      return request(app)
+        .get("/api/articles?topic=bananas")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toEqual([]);
+        });
+    });
+  });
+  describe("sort_by", () => {
+    it("should sort articles by specified column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("comment_count", {
+            descending: true,
+            coerce: true,
+          });
+        });
+    });
+    it("should return 400 Invalid sort query if given invalid sort query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Sort Query");
+        });
+    });
+  });
+  describe("order", () => {
+    it("should order ascending or descending depending on order query", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    it("should return 400 Invalid Order Query when sent invalid order", () => {
+      return request(app)
+        .get("/api/articles?order=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Order Query");
+        });
+    });
+  });
+  it("should accept combinations of queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title");
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "mitch");
+        });
+      });
+  });
+});
