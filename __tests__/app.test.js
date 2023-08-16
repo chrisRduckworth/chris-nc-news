@@ -483,4 +483,12 @@ describe.only("GET /api/users/:username", () => {
         });
       });
   });
+  it("should respond with 404 Not Found if no user with specified username exists", () => {
+    return request(app)
+      .get("/api/users/joey_wheeler")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
+      });
+  });
 });
