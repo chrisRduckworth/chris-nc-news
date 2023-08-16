@@ -468,3 +468,27 @@ describe("FEATURE GET /api/articles:article_id (comment_count)", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  it("should return with specified user", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  it("should respond with 404 Not Found if no user with specified username exists", () => {
+    return request(app)
+      .get("/api/users/joey_wheeler")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
+      });
+  });
+});
