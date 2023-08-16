@@ -469,7 +469,7 @@ describe("FEATURE GET /api/articles:article_id (comment_count)", () => {
   });
 });
 
-describe.only("GET /api/users/:username", () => {
+describe("GET /api/users/:username", () => {
   it("should return with specified user", () => {
     return request(app)
       .get("/api/users/butter_bridge")
