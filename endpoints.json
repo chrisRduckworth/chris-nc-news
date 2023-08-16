@@ -22,7 +22,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles with a comment count and sorted by date",
-    "queries": [],
+    "queries": ["topic", "sort_by", "order"],
     "format": "array of article objects",
     "exampleResponse": {
       "articles": [
