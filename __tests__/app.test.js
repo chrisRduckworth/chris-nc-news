@@ -264,7 +264,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("DELETE /api/comments/:commend_it", () => {
+describe("DELETE /api/comments/:commend_id", () => {
   it("should delete comment with given id, responds with status 204 no content", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -562,7 +562,7 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   it("should post a new article and return it", () => {
     const newArticle = {
       author: "butter_bridge",
@@ -615,7 +615,58 @@ describe.only("POST /api/articles", () => {
         });
       });
   });
+  it("should return 400 bed request when user does not exist", () => {
+    const newArticle = {
+      author: "joey_wheeler",
+      title: "the importance of the heart of the cards",
+      body: "im the king baby",
+      topic: "paper",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("should return 400 bed request when topic does not exist", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "the importance of the heart of the cards",
+      body: "im the king baby",
+      topic: "children's card games",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("should return 400 bad request when given malformed body", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("should return 400 bad request when given body with incorrect data types", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "the importance of the heart of the cards",
+      body: 10,
+      topic: "children's card games",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
 });
-// since article_img_url is optional, should
-// test for when that's not included
-// and for invalid author/topic since it's fkey
