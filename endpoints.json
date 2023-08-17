@@ -21,8 +21,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles with a comment count and sorted by date",
-    "queries": ["topic", "sort_by", "order"],
+    "description": "serves an array of all articles with a comment count and sorted by date and a total count of articles returnied",
+    "queries": ["topic", "sort_by", "order", "limit", "p"],
     "format": "array of article objects",
     "exampleResponse": {
       "articles": [
@@ -36,7 +36,8 @@
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           "comment_count": 6
         }
-      ]
+      ],
+      "total_count": 13
     }
   },
   "GET /api/articles/:article_id": {
