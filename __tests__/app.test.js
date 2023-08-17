@@ -493,14 +493,13 @@ describe("GET /api/users/:username", () => {
   });
 });
 
-describe.only("PATCH /api/comments/:comment_id", () => {
+describe("PATCH /api/comments/:comment_id", () => {
   it("should increase the votes on specified comment if given positive", () => {
     return request(app)
       .patch("/api/comments/1")
       .send({ inc_votes: 2 })
       .expect(200)
       .then(({ body: { comment } }) => {
-        console.log(comment);
         expect(comment).toMatchObject({
           comment_id: 1,
           body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
@@ -525,5 +524,40 @@ describe.only("PATCH /api/comments/:comment_id", () => {
         });
       });
   });
+  it("should return 404 not found if given valid id with no associated comment", () => {
+    return request(app)
+      .patch("/api/comments/500")
+      .send({ inc_votes: -3 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
+      });
+  });
+  it("should return 400 Bad Request if given invalid comment id", () => {
+    return request(app)
+      .patch("/api/comments/bananas")
+      .send({ inc_votes: -3 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("should return 400 Bad Request if given malformed body", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("should return 400 Bad Request if given body with invalid inc_votes data type", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "bananas" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
 });
-// not found, invalid, malformed body, invalid data type
