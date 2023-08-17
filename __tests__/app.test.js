@@ -121,8 +121,9 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toHaveLength(13);
+      .then(({ body }) => {
+        const { articles, total_count } = body;
+        expect(total_count).toBe(13);
         articles.forEach((article) => {
           expect(Object.keys(article)).toIncludeSameMembers([
             "author",
@@ -390,8 +391,9 @@ describe("FEATURE GET/api/articles (queries)", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles).toHaveLength(12);
+        .then(({ body }) => {
+          const { articles, total_count } = body;
+          expect(total_count).toBe(12);
           articles.forEach((article) => {
             expect(article).toHaveProperty("topic", "mitch");
           });
@@ -667,6 +669,105 @@ describe("POST /api/articles", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET /api/articles (pagination)", () => {
+  describe("limit", () => {
+    it("should limit the number of results according to the limit query", () => {
+      return request(app)
+        .get("/api/articles?limit=8")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(8);
+        });
+    });
+    it("should accept limits above total number of responses", () => {
+      return request(app)
+        .get("/api/articles?limit=10000")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(13);
+        });
+    });
+    it("should default limit <= 0 to 10", () => {
+      return request(app)
+        .get("/api/articles?limit=-5")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(10);
+        });
+    });
+    it("should return 400 Invalid Limit if sent invalid data type for limit", () => {
+      return request(app)
+        .get("/api/articles?limit=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Limit");
+        });
+    });
+  });
+  describe("p", () => {
+    it("should return the specified page of results", () => {
+      return request(app)
+        .get("/api/articles?p=2")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(3);
+        });
+    });
+    it("should return 200 but now rows if given page beyond answers", () => {
+      return request(app)
+        .get("/api/articles?p=100")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(0);
+        });
+    });
+    it("should default page to 1 if given page <= 0", () => {
+      return request(app)
+        .get("/api/articles?p=-5")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(10);
+        });
+    });
+    it("should return 400 Invalid Page if given invalid data type", () => {
+      return request(app)
+        .get("/api/articles?p=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Page");
+        });
+    });
+  });
+  describe("total_count", () => {
+    it("should return a total count property equal to the total number of returned values", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { total_count } }) => {
+          expect(total_count).toBe(13);
+        });
+    });
+    it("should return a total count according to filters", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: { total_count } }) => {
+          expect(total_count).toBe(12);
+        });
+    });
+  });
+  it("should be able to accept a combination of queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&limit=8&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles, total_count } = body;
+        expect(total_count).toBe(12);
+        expect(articles).toHaveLength(4);
       });
   });
 });

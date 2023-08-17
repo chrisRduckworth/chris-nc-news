@@ -36,7 +36,13 @@ exports.fetchArticleById = (articleId) => {
     });
 };
 
-exports.fetchArticles = (topic, sortBy = "date", order = "desc") => {
+exports.fetchArticles = (
+  topic,
+  sortBy = "date",
+  order = "desc",
+  limit = 10,
+  page = 1
+) => {
   const queries = [];
   const sortByLookup = {
     author: "articles.author",
@@ -55,6 +61,7 @@ exports.fetchArticles = (topic, sortBy = "date", order = "desc") => {
       msg: "Invalid Sort Query",
     });
   }
+  sortBy = sortByLookup[sortBy];
 
   if (!["asc", "desc"].includes(order)) {
     return Promise.reject({
@@ -63,7 +70,23 @@ exports.fetchArticles = (topic, sortBy = "date", order = "desc") => {
     });
   }
 
-  sortBy = sortByLookup[sortBy];
+  limit = parseInt(limit);
+  if (!limit) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Limit",
+    });
+  }
+  if (limit <= 0) limit = 10;
+
+  page = parseInt(page);
+  if (!page) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Page",
+    });
+  }
+  if (page <= 0) page = 1;
 
   let queryStr = `
     SELECT 
@@ -89,7 +112,9 @@ exports.fetchArticles = (topic, sortBy = "date", order = "desc") => {
     rows.forEach(({ comment_count }) => {
       comment_count = parseInt(comment_count);
     });
-    return rows;
+    const startIndex = limit * (page - 1);
+    const endIndex = startIndex + limit;
+    return [rows.slice(startIndex, endIndex), rows.length];
   });
 };
 
