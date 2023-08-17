@@ -6,11 +6,9 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handleSqlErrors = (err, req, res, next) => {
-  if (err.code === "22P02" || err.code === "23502") {
+  const badReqErrors = ["22P02", "23502", "23503", "42601"];
+  if (badReqErrors.includes(err.code)) {
     res.status(400).send({ msg: "Bad Request" });
-  }
-  if (err.code === "23503") {
-    res.status(404).send({ msg: "Not Found" });
   }
   next(err);
 };

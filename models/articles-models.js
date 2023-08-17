@@ -112,14 +112,14 @@ exports.updateArticleVotes = (articleId, incVotes) => {
 exports.createArticle = (body) => {
   let queryStr = `
   INSERT INTO articles
-  (author, title, body, topic`
+  (author, title, body, topic`;
   if (body.article_img_url) {
-    queryStr += ', article_img_url'
+    queryStr += ", article_img_url";
   }
   queryStr += `)
   VALUES %L
-  RETURNING *;`
-  
+  RETURNING *;`;
+
   const values = [Object.values(body)];
 
   const formattedQuery = format(queryStr, values);
