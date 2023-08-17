@@ -565,7 +565,7 @@ describe("PATCH /api/comments/:comment_id", () => {
 describe.only("POST /api/articles", () => {
   it("should post a new article and return it", () => {
     const newArticle = {
-      author: "joey wheeler",
+      author: "butter_bridge",
       title: "the importance of the heart of the cards",
       body: "im the king baby",
       topic: "paper",
@@ -578,7 +578,7 @@ describe.only("POST /api/articles", () => {
       .expect(201)
       .then(({ body: { article } }) => {
         expect(article).toMatchObject({
-          author: "joey wheeler",
+          author: "butter_bridge",
           title: "the importance of the heart of the cards",
           body: "im the king baby",
           topic: "paper",
@@ -591,4 +591,31 @@ describe.only("POST /api/articles", () => {
         });
       });
   });
+  it("should post a new article when article_img_url is not provided in body", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "the importance of the heart of the cards",
+      body: "im the king baby",
+      topic: "paper",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "the importance of the heart of the cards",
+          body: "im the king baby",
+          topic: "paper",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
 });
+// since article_img_url is optional, should
+// test for when that's not included
+// and for invalid author/topic since it's fkey
