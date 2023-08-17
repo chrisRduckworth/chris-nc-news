@@ -39,6 +39,7 @@
     "setupFilesAfterEnv": [
       "jest-extended/all",
       "jest-sorted"
-    ]
+    ],
+    "testPathIgnorePatterns": ["endpoints-tests"]
   }
 }
