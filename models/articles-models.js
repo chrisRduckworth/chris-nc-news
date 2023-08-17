@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 const { checkExists } = require("../utils/utils");
 
 exports.fetchArticleById = (articleId) => {
@@ -106,4 +107,24 @@ exports.updateArticleVotes = (articleId, incVotes) => {
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.createArticle = (body) => {
+  let queryStr = `
+  INSERT INTO articles
+  (author, title, body, topic`
+  if (body.article_img_url) {
+    queryStr += ', article_img_url'
+  }
+  queryStr += `)
+  VALUES %L
+  RETURNING *;`
+  
+  const values = [Object.values(body)];
+
+  const formattedQuery = format(queryStr, values);
+  return db.query(formattedQuery).then(({ rows }) => {
+    rows[0].comment_count = 0;
+    return rows[0];
+  });
 };
