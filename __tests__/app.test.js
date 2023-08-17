@@ -891,3 +891,18 @@ describe("POST /api/topics", () => {
       });
   });
 });
+
+describe.only("DELETE /api/articles/:article_id", () => {
+  it("should delete the specified article", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+        return db.query("SELECT * FROM articles;");
+      })
+      .then(({ rows }) => {
+        expect(rows).toHaveLength(12);
+      });
+  });
+});
