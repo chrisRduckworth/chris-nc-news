@@ -8,7 +8,7 @@ const {
   miscTests,
   topicTests,
   userTests,
-} = require("./endpoints-tests/index.tests");
+} = require("./endpoints-tests");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
