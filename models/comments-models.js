@@ -1,7 +1,25 @@
 const db = require("../db/connection");
 const { checkExists } = require("../utils/utils");
 
-exports.fetchCommentsByArticle = (articleId) => {
+exports.fetchCommentsByArticle = (articleId, limit = 10, page = 1) => {
+  limit = parseInt(limit);
+  if (!limit) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Limit",
+    });
+  }
+  if (limit <= 0) limit = 10;
+
+  page = parseInt(page);
+  if (!page) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Page",
+    });
+  }
+  if (page <= 0) page = 1;
+
   return checkExists("articles", "article_id", articleId)
     .then(() => {
       return db.query(
@@ -11,7 +29,11 @@ exports.fetchCommentsByArticle = (articleId) => {
         [articleId]
       );
     })
-    .then(({ rows }) => rows);
+    .then(({ rows }) => {
+      const startIndex = limit * (page - 1);
+      const endIndex = startIndex + limit;
+      return rows.slice(startIndex, endIndex);
+    });
 };
 
 exports.createComment = (reqBody, articleId) => {

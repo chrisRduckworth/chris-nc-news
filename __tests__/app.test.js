@@ -151,7 +151,7 @@ describe("GET /api/articles", () => {
 describe("GET /api/articles/:article_id/comments", () => {
   it("should respond with an array of comments with the given article_id, sorted by date", () => {
     return request(app)
-      .get("/api/articles/1/comments")
+      .get("/api/articles/1/comments?limit=100")
       .expect(200)
       .then(({ body: { comments } }) => {
         const keys = [
@@ -768,6 +768,85 @@ describe("GET /api/articles (pagination)", () => {
         const { articles, total_count } = body;
         expect(total_count).toBe(12);
         expect(articles).toHaveLength(4);
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments (pagination)", () => {
+  describe("limit", () => {
+    it("should limit the number of results according to the limit query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(5);
+        });
+    });
+    it("should accept limits above total number of responses", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=1000")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(11);
+        });
+    });
+    it("should default limits <= 0 to 10", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=-5")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(10);
+        });
+    });
+    it("should return 400 Invalid Limit if sent invalid data type for limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Limit");
+        });
+    });
+  });
+  describe("p", () => {
+    it("should return specified page of results", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=2")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(1);
+        });
+    });
+    it("should return 200 but no rows if given page beyond answers", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=10")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(0);
+        });
+    });
+    it("should default page <= 0 to 1", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=-5")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(10);
+        });
+    });
+    it("should return 400 Invalid Page if given invalid data type", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=bananas")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Page");
+        });
+    });
+  });
+  it("should accept a combination of queries", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=7&p=2")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(4);
       });
   });
 });
