@@ -135,23 +135,41 @@ exports.updateArticleVotes = (articleId, incVotes) => {
 };
 
 exports.createArticle = (body) => {
-  let queryStr = `
-  INSERT INTO articles
-  (author, title, body, topic`;
-  if (body.article_img_url) {
-    queryStr += ", article_img_url";
-  }
-  queryStr += `)
-  VALUES %L
-  RETURNING *;`;
+  const { topic } = body;
+  return db
+    .query("SELECT * FROM topics WHERE slug = $1", [topic])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return db.query(
+          `
+          INSERT INTO topics
+          (slug)
+          VALUES
+          ($1);`,
+          [topic]
+        );
+      }
+    })
+    .then(() => {
+      let queryStr = `
+        INSERT INTO articles
+        (author, title, body, topic`;
+      if (body.article_img_url) {
+        queryStr += ", article_img_url";
+      }
+      queryStr += `)
+        VALUES %L
+        RETURNING *;`;
 
-  const values = [Object.values(body)];
+      const values = [Object.values(body)];
 
-  const formattedQuery = format(queryStr, values);
-  return db.query(formattedQuery).then(({ rows }) => {
-    rows[0].comment_count = 0;
-    return rows[0];
-  });
+      const formattedQuery = format(queryStr, values);
+      return db.query(formattedQuery);
+    })
+    .then(({ rows }) => {
+      rows[0].comment_count = 0;
+      return rows[0];
+    });
 };
 
 exports.removeArticle = (articleId) => {

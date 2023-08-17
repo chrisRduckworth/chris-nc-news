@@ -40,7 +40,9 @@ exports.postArticle = (req, res, next) => {
     .then((article) => {
       res.status(201).send({ article });
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.deleteArticle = (req, res, next) => {

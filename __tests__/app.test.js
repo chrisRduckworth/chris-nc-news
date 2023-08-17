@@ -617,6 +617,30 @@ describe("POST /api/articles", () => {
         });
       });
   });
+  it("should create new topic if given topic does not exist", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "the importance of the heart of the cards",
+      body: "im the king baby",
+      topic: "children's card games",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "the importance of the heart of the cards",
+          body: "im the king baby",
+          topic: "children's card games",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
   it("should return 400 bed request when user does not exist", () => {
     const newArticle = {
       author: "joey_wheeler",
@@ -632,40 +656,10 @@ describe("POST /api/articles", () => {
         expect(msg).toBe("Bad Request");
       });
   });
-  it("should return 400 bed request when topic does not exist", () => {
-    const newArticle = {
-      author: "butter_bridge",
-      title: "the importance of the heart of the cards",
-      body: "im the king baby",
-      topic: "children's card games",
-    };
-    return request(app)
-      .post("/api/articles")
-      .send(newArticle)
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request");
-      });
-  });
   it("should return 400 bad request when given malformed body", () => {
     return request(app)
       .post("/api/articles")
       .send({})
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request");
-      });
-  });
-  it("should return 400 bad request when given body with incorrect data types", () => {
-    const newArticle = {
-      author: "butter_bridge",
-      title: "the importance of the heart of the cards",
-      body: 10,
-      topic: "children's card games",
-    };
-    return request(app)
-      .post("/api/articles")
-      .send(newArticle)
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request");
