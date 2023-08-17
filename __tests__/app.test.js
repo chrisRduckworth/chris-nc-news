@@ -492,3 +492,38 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe.only("PATCH /api/comments/:comment_id", () => {
+  it("should increase the votes on specified comment if given positive", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 2 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        console.log(comment);
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          votes: 18,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("should decrease the votes if given negative value", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -3 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          votes: 13,
+          created_at: expect.any(String),
+        });
+      });
+  });
+});
+// not found, invalid, malformed body, invalid data type
