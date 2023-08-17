@@ -153,3 +153,17 @@ exports.createArticle = (body) => {
     return rows[0];
   });
 };
+
+exports.removeArticle = (articleId) => {
+  return checkExists("articles", "article_id", articleId)
+    .then(() => {
+      return db.query("DELETE FROM comments WHERE article_id = $1;", [
+        articleId,
+      ]);
+    })
+    .then(() => {
+      return db.query("DELETE FROM articles WHERE article_id = $1", [
+        articleId,
+      ]);
+    });
+};

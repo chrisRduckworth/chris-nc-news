@@ -162,5 +162,11 @@
       "slug": "children's card games",
       "description": "they're for children, honest"
     }
+  },
+  "DELETE /api/articles": {
+    "description": "deletes article and associated comments",
+    "queries": [],
+    "format": "no content",
+    "exampleResponse": null
   }
 }
