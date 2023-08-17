@@ -561,3 +561,34 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe.only("POST /api/articles", () => {
+  it("should post a new article and return it", () => {
+    const newArticle = {
+      author: "joey wheeler",
+      title: "the importance of the heart of the cards",
+      body: "im the king baby",
+      topic: "paper",
+      article_img_url:
+        "https://static1.srcdn.com/wordpress/wp-content/uploads/2017/05/Joey-Wheeler-Pointy-Chin-Yu-Gi-Oh.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          author: "joey wheeler",
+          title: "the importance of the heart of the cards",
+          body: "im the king baby",
+          topic: "paper",
+          article_img_url:
+            "https://static1.srcdn.com/wordpress/wp-content/uploads/2017/05/Joey-Wheeler-Pointy-Chin-Yu-Gi-Oh.jpg",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+});
