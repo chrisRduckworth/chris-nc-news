@@ -850,3 +850,44 @@ describe("GET /api/articles/:article_id/comments (pagination)", () => {
       });
   });
 });
+
+describe("POST /api/topics", () => {
+  it("should add the provided new topic to the database", () => {
+    const newTopic = {
+      slug: "children's card games",
+      description: "they're for children, honest",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body: { topic } }) => {
+        expect(topic).toMatchObject({
+          slug: "children's card games",
+          description: "they're for children, honest",
+        });
+      });
+  });
+  it("should return 400 Bad Request if sent malformed body", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("should return 400 Bad Request if sent a topic name which already exists", () => {
+    const newTopic = {
+      slug: "cats",
+      description: "they're not hamsters either",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
