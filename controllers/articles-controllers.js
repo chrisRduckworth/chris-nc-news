@@ -49,5 +49,5 @@ exports.deleteArticle = (req, res, next) => {
     .then(() => {
       res.status(204).send();
     })
-    .catch((err) => console.log(err));
+    .catch(next);
 };
