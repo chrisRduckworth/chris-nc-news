@@ -905,4 +905,20 @@ describe.only("DELETE /api/articles/:article_id", () => {
         expect(rows).toHaveLength(12);
       });
   });
+  it("should return 404 not found if given a valid id but no such article exists", () => {
+    return request(app)
+      .delete("/api/articles/500")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not Found");
+      });
+  });
+  it("should return 400 Bad Request when sent an invalid id", () => {
+    return request(app)
+      .delete("/api/articles/bananas")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
 });
