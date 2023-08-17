@@ -136,5 +136,21 @@
       "votes": 13,
       "created_at": "2020-02-18 00:00:00"
     }
+  },
+  "POST /api/articles": {
+    "description": "adds a new article and responds with that article",
+    "queries": [],
+    "format": "object",
+    "exampleResponse": {
+      "author": "joey wheeler",
+      "title": "the importance of the heart of the cards",
+      "body": "im the king baby",
+      "topic": "paper",
+      "article_img_url": "https://static1.srcdn.com/wordpress/wp-content/uploads/2017/05/Joey-Wheeler-Pointy-Chin-Yu-Gi-Oh.jpg",
+      "article_id": 14,
+      "votes": 0,
+      "created_at": "2023-08-17 09:30:00",
+      "comment_count": 0
+    }
   }
 }
