@@ -124,5 +124,17 @@
       "name": "jonny",
       "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates vote count on specified comment",
+    "queries": [],
+    "format": "object",
+    "exampleResponse": {
+      "comment_id": 1,
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "article_id": 9,
+      "votes": 13,
+      "created_at": "2020-02-18 00:00:00"
+    }
   }
 }
