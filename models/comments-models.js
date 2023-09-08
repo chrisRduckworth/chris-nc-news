@@ -96,7 +96,8 @@ exports.fetchComments = (limit = 5) => {
   return db
     .query(
       `
-    SELECT * FROM comments
+    SELECT comment_id, comments.body, comments.article_id, comments.author, comments.votes, comments.created_at, articles.title FROM comments
+    LEFT JOIN articles on comments.comment_id = articles.article_id
     ORDER BY created_at desc;
   `
     )
