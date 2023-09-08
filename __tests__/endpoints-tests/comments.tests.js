@@ -97,10 +97,10 @@ exports.commentTests = () => {
         });
     });
   });
-  describe.only("GET /api/comments", () => {
+  describe("GET /api/comments", () => {
     it("should return with all comments when sent a request, sorted by date descending", () => {
       return request(app)
-        .get("/api/comments")
+        .get("/api/comments?limit=1000")
         .expect(200)
         .then(({ body: { comments } }) => {
           expect(comments).toHaveLength(18);
@@ -115,5 +115,37 @@ exports.commentTests = () => {
           });
         });
     });
+    it('should return by default with the first 5 comments', () => {
+      return request(app)
+        .get("/api/comments")
+        .expect(200)
+        .then(({body : { comments }}) => {
+          expect(comments).toHaveLength(5)
+        })
+    });
+    it('should accept custom limit query', () => {
+      return request(app)
+        .get("/api/comments?limit=10")
+        .expect(200)
+        .then(({body : {comments}}) => {
+          expect(comments).toHaveLength(10)
+        })
+    })
+    it('should send 400 Invalid Limit if given an improper limit',() => {
+      return request(app)
+        .get("/api/comments?limit=bananas")
+        .expect(400)
+        .then(({body : { msg }}) => {
+          expect(msg).toBe("Invalid Limit")
+        })
+    })
+    it('should default limit to 5 if given limit less than or equal to 0', () => {
+      return request(app)
+        .get("/api/comments?limit=-10")
+        .expect(200)
+        .then(({body: {comments}}) => {
+          expect(comments).toHaveLength(5)
+        })
+    })
   });
 };

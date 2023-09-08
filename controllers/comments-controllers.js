@@ -48,10 +48,10 @@ exports.patchComment = (req, res, next) => {
 };
 
 exports.getComments = (req, res, next) => {
-  console.log("in controller");
-  fetchComments()
+  const { limit } = req.query;
+  fetchComments(limit)
     .then((comments) => {
       res.status(200).send({ comments });
     })
-    .catch((err) => console.log(err));
+    .catch(next);
 };
