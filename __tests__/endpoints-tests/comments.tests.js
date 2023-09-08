@@ -106,6 +106,7 @@ exports.commentTests = () => {
           expect(comments).toHaveLength(18);
           expect(comments).toBeSortedBy("created_at", { descending: true });
           comments.forEach((comment) => {
+            expect(comment).toHaveProperty("title")
             expect(comment).toHaveProperty("comment_id"),
               expect(comment).toHaveProperty("article_id"),
               expect(comment).toHaveProperty("author"),
