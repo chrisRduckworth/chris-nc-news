@@ -168,5 +168,20 @@
     "queries": [],
     "format": "no content",
     "exampleResponse": null
+  },
+  "GET /api/comments": {
+    "description": "returns all comments sorted by date descending",
+    "queries": [],
+    "format": "array of comment objects",
+    "exampleResponse": [
+      {
+        "comment_id": 5,
+        "votes": 10,
+        "created_at": 1594329060000,
+        "author": "chris",
+        "body": "there is no spoon",
+        "article_id": 2
+      }
+    ]
   }
 }

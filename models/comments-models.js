@@ -82,3 +82,17 @@ exports.updateComment = (commentId, incVotes) => {
       return rows[0];
     });
 };
+
+exports.fetchComments = () => {
+  console.log("in model");
+  return db
+    .query(
+      `
+    SELECT * FROM comments
+    ORDER BY created_at desc;
+  `
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
