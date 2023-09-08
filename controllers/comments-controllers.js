@@ -3,6 +3,7 @@ const {
   createComment,
   removeComment,
   updateComment,
+  fetchComments,
 } = require("../models/comments-models");
 
 exports.getCommentsByArticle = (req, res, next) => {
@@ -44,4 +45,13 @@ exports.patchComment = (req, res, next) => {
       res.status(200).send({ comment });
     })
     .catch(next);
+};
+
+exports.getComments = (req, res, next) => {
+  console.log("in controller");
+  fetchComments()
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => console.log(err));
 };
