@@ -83,8 +83,16 @@ exports.updateComment = (commentId, incVotes) => {
     });
 };
 
-exports.fetchComments = () => {
-  console.log("in model");
+exports.fetchComments = (limit = 5) => {
+  limit = parseInt(limit)
+  if (!limit) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Limit",
+    });
+  }
+  if (limit <= 0) limit = 5;
+
   return db
     .query(
       `
@@ -93,6 +101,6 @@ exports.fetchComments = () => {
   `
     )
     .then(({ rows }) => {
-      return rows;
+      return rows.slice(0,limit);
     });
 };
